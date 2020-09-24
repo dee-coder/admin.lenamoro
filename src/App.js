@@ -6,6 +6,7 @@ import AuthPage from 'pages/AuthPage';
 import React from 'react';
 import componentQueries from 'react-component-queries';
 import { BrowserRouter, Redirect, Route, Switch } from 'react-router-dom';
+import AttributeSetPage from './pages/AtrributeSetPage';
 import ProductPage from './pages/ProductPage';
 import './styles/reduction.scss';
 
@@ -60,7 +61,7 @@ class App extends React.Component {
                 <Route exact path="/buttons" component={ButtonPage} />
                 <Route exact path="/cards" component={CardPage} />
                 <Route exact path="/products" component={ProductPage} />
-
+                <Route exact path="/attributes" component={AttributeSetPage} />
                 <Route exact path="/widgets" component={WidgetPage} />
                 <Route exact path="/typography" component={TypographyPage} />
                 <Route exact path="/alerts" component={AlertPage} />
