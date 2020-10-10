@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import FormProduct from '../components/sizeBasedForm';
 
 import {
@@ -13,42 +13,43 @@ import {
   ModalHeader,
   ModalFooter,
 } from 'reactstrap';
+import axios from 'axios';
 
 const SizeAttributeSet = () => {
-  const styles = {
-    container: {
-      padding: '20px',
-    },
-    activeTab: {
-      border: '1px solid #000',
-    },
-    tab: {
-      '&:hover': {
-        cursor: 'pointer',
-      },
-    },
-    titleInput: {
-      marginTop: '10px',
-      marginBottom: '5px',
-    },
-    descriptionInput: {
-      marginTop: '5px',
-      marginBottom: '10px',
-    },
-    addNewBtn: {
-      float: 'right',
-    },
-  };
-
+  useEffect(() => {
+    const url = 'http://localhost:4321/sizeatrribute/getall?';
+    axios
+      .get(url)
+      .then(res => {
+        console.log(res);
+        setItems(res.data.products);
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  }, []);
   const [activeTab, setActiveTab] = useState(null);
   const [modal, setModal] = useState(false);
   const [newTitle, setNewTitle] = useState();
   const [showToggle, setShowToggle] = useState();
-  const [items, setItems] = useState([
-    { name: 'Small', key: '0' },
-    { name: 'Medium', key: '1' },
-    { name: 'Large', key: '2' },
-  ]);
+  const [items, setItems] = useState([]);
+
+  const [title, setTitle] = useState();
+  const [isActive, setIsActive] = useState(false);
+  const [price, setPrice] = useState();
+  const [dimension, setDismension] = useState();
+  const [tooltipContent, setToolTipContent] = useState();
+  const [Description, setDescription] = useState();
+
+  const setIsActiveOrNot = () => {
+    var value = false;
+    if (isActive) {
+      value = false;
+    } else {
+      value = true;
+    }
+    setIsActive(value);
+  };
 
   const handleTabChange = key => {
     if (key === activeTab) {
@@ -59,14 +60,41 @@ const SizeAttributeSet = () => {
   };
 
   const addNewSize = () => {
-    var value = items.length + 1;
-    console.log('value:', value.toString());
+    const url =
+      'http://localhost:4321/sizeatrribute/upload?title=' +
+      title +
+      '&isActive=' +
+      isActive +
+      '&price=' +
+      price +
+      '&dimension=' +
+      dimension +
+      '&tooltip_content=' +
+      tooltipContent +
+      '&description=' +
+      Description;
+    axios
+      .get(url)
+      .then(res => {
+        console.log(res);
+        setItems(res.data.products);
+        setTitle('');
+        setActiveTab(false);
+        setPrice('');
+        setDismension('');
+        setToolTipContent('');
+        setDescription('');
+        setShowToggle(false);
+      })
+      .catch(err => console.log(err));
+    // var value = items.length + 1;
+    // console.log('value:', value.toString());
 
-    var obj = { name: newTitle, key: value.toString() };
-    setItems([...items, obj]);
-    console.log('value:', items);
+    // var obj = { name: newTitle, key: value.toString() };
+    // setItems([...items, obj]);
+    // console.log('value:', items);
 
-    setShowToggle(false);
+    // setShowToggle(false);
   };
 
   const ShowToggle = value => {
@@ -88,9 +116,51 @@ const SizeAttributeSet = () => {
               <Input
                 style={styles.titleInput}
                 placeholder="Title"
-                value={newTitle}
-                onChange={e => setNewTitle(e.target.value)}
+                value={title}
+                onChange={e => setTitle(e.target.value)}
               />
+
+              <div className="form-group-inline">
+                <input
+                  style={{ marginTop: '15px' }}
+                  type="checkbox"
+                  checked={isActive}
+                  aria-label="Global"
+                  onChange={e => setIsActiveOrNot()}
+                />
+
+                <label style={{ marginTop: '15px', marginLeft: '10px' }}>
+                  is Active
+                </label>
+              </div>
+              <Input
+                style={styles.titleInput}
+                value={price}
+                placeholder="Price"
+                onChange={e => setPrice(e.target.value)}
+              />
+
+              <Input
+                style={styles.titleInput}
+                value={dimension}
+                placeholder="Dimension"
+                onChange={e => setDismension(e.target.value)}
+              />
+              <Input
+                style={styles.titleInput}
+                value={tooltipContent}
+                placeholder="Tool Tip Content"
+                onChange={e => setToolTipContent(e.target.value)}
+              />
+
+              <textarea
+                style={styles.descriptionInput}
+                class="form-control"
+                aria-label="With textarea"
+                placeholder="Description"
+                value={Description}
+                onChange={e => setDescription(e.target.value)}
+              ></textarea>
             </ModalBody>
             <ModalFooter>
               <Button color="primary" onClick={() => addNewSize()}>
@@ -108,9 +178,10 @@ const SizeAttributeSet = () => {
           return (
             <Row>
               <FormProduct
-                name={attr.name}
-                key={attr.key}
-                myKey={attr.key}
+                name={attr.title}
+                key={attr.id}
+                obj={attr}
+                myKey={attr.id}
                 activeTab={activeTab}
                 handleTabChange={handleTabChange}
               />
@@ -120,6 +191,55 @@ const SizeAttributeSet = () => {
       </CardBody>
     </Card>
   );
+};
+
+const styles = {
+  titleInput: {
+    marginTop: '10px',
+    marginBottom: '5px',
+  },
+  descriptionInput: {
+    marginTop: '5px',
+    marginBottom: '10px',
+  },
+  card: {
+    width: '100%',
+  },
+  listItem: {
+    padding: '10px',
+    marginLeft: '30px',
+    marginRight: '30px',
+    width: '400px',
+    background: '#c4c4c4',
+    border: '1px solid #c4c4c4',
+    borderRadius: '3px',
+  },
+  layoutPad: {
+    paddingLeft: '30px',
+    paddingRight: '30px',
+  },
+  container: {
+    padding: '20px',
+  },
+  activeTab: {
+    border: '1px solid #000',
+  },
+  tab: {
+    '&:hover': {
+      cursor: 'pointer',
+    },
+  },
+  titleInput: {
+    marginTop: '10px',
+    marginBottom: '5px',
+  },
+  descriptionInput: {
+    marginTop: '5px',
+    marginBottom: '10px',
+  },
+  addNewBtn: {
+    float: 'right',
+  },
 };
 
 export default SizeAttributeSet;

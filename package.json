@@ -4,6 +4,7 @@
   "private": false,
   "homepage": "https://reduction-admin.github.io/react-reduction",
   "dependencies": {
+    "axios": "^0.20.0",
     "bootstrap": "4.3.1",
     "chart.js": "2.7.2",
     "classnames": "^2.2.6",
@@ -16,6 +17,7 @@
     "react-d3-map": "^0.8.3",
     "react-dom": "^16.8.4",
     "react-ga": "^2.5.7",
+    "@aws-amplify/ui": "1.0.18",
     "react-icons": "^3.5.0",
     "react-infinite-calendar": "^2.3.1",
     "react-notification-system": "^0.2.17",

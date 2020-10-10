@@ -91,6 +91,8 @@ const pageContents = [
 const navItems = [
   { to: '/', name: 'dashboard', exact: true, Icon: MdDashboard },
   { to: '/products', name: 'products', exact: false, Icon: MdWeb },
+  { to: '/addnew', name: 'add new', exact: false, Icon: MdWeb },
+
   { to: '/attributes', name: 'attributes', exact: false, Icon: MdWeb },
 ];
 

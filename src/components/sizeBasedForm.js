@@ -9,9 +9,11 @@ import {
   Collapse,
   DropdownToggle,
   Dropdown,
+  FormGroup,
+  Button,
 } from 'reactstrap';
 
-const FormProduct = ({ name, myKey, handleTabChange, activeTab }) => {
+const FormProduct = ({ name, myKey, handleTabChange, activeTab, obj }) => {
   const styles = {
     titleInput: {
       marginTop: '10px',
@@ -44,38 +46,64 @@ const FormProduct = ({ name, myKey, handleTabChange, activeTab }) => {
         <Col>
           <div style={styles.listItem} onClick={() => handleTabChange(myKey)}>
             {name}
+            {myKey === activeTab && (
+              <i
+                style={{ color: '#000', float: 'right' }}
+                class="fas fa-sort-up"
+              ></i>
+            )}
+
+            {myKey != activeTab && (
+              <i
+                style={{ color: '#000', float: 'right' }}
+                class="fas fa-caret-down"
+              ></i>
+            )}
           </div>
 
           <Collapse isOpen={myKey === activeTab} style={styles.layoutPad}>
             <div className="form-group-inline">
               <input
-                style={{ marginTop: '15px' }}
-                type="checkbox"
-                aria-label="Global"
-              />
-              <label style={{ marginTop: '15px', marginLeft: '10px' }}>
-                Global
-              </label>
-              <input
                 style={{ marginTop: '15px', marginLeft: '15px' }}
                 type="checkbox"
                 aria-label="Global"
+                checked={obj.isActive && true}
               />
               <label style={{ marginTop: '15px', marginLeft: '10px' }}>
                 is Active
               </label>
             </div>
-            <Input style={styles.titleInput} placeholder="Price" />
+            <Input
+              style={styles.titleInput}
+              placeholder="Price"
+              value={obj.price}
+            />
 
-            <Input style={styles.titleInput} placeholder="Dimension" />
-            <Input style={styles.titleInput} placeholder="Tool Tip Content" />
+            <Input
+              style={styles.titleInput}
+              placeholder="Dimension"
+              value={obj.dimension}
+            />
+            <Input
+              style={styles.titleInput}
+              placeholder="Tool Tip Content"
+              value={obj.tooltip_content}
+            />
 
             <textarea
               style={styles.descriptionInput}
               class="form-control"
               aria-label="With textarea"
               placeholder="Description"
+              value={obj.description}
             ></textarea>
+            <FormGroup inline>
+              <Button color="primary"> Save Changes</Button>
+              <Button color="primary" style={{ marginLeft: '10px' }}>
+                {' '}
+                Discard
+              </Button>
+            </FormGroup>
           </Collapse>
         </Col>
       </Row>

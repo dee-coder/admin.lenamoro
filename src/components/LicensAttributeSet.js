@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 
 import {
   CardHeader,
@@ -15,40 +16,29 @@ import {
 import LicenseForm from './LicenseBasedForm';
 
 const LicenseAttributeSet = () => {
-  const styles = {
-    container: {
-      padding: '20px',
-    },
-    activeTab: {
-      border: '1px solid #000',
-    },
-    tab: {
-      '&:hover': {
-        cursor: 'pointer',
-      },
-    },
-    titleInput: {
-      marginTop: '10px',
-      marginBottom: '5px',
-    },
-    descriptionInput: {
-      marginTop: '5px',
-      marginBottom: '10px',
-    },
-    addNewBtn: {
-      float: 'right',
-    },
-  };
-
+  useEffect(() => {
+    const url = 'http://localhost:4321/licenseattribute/getall?';
+    axios
+      .get(url)
+      .then(res => {
+        console.log(res);
+        setItems(res.data.products);
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  }, []);
   const [activeTab, setActiveTab] = useState(null);
   const [modal, setModal] = useState(false);
   const [newTitle, setNewTitle] = useState();
   const [showToggle, setShowToggle] = useState();
-  const [items, setItems] = useState([
-    { name: 'Social License', key: '0' },
-    { name: 'Editorial License', key: '1' },
-    { name: 'Commercial License', key: '2' },
-  ]);
+  const [items, setItems] = useState([]);
+
+  const [title, setTitle] = useState();
+  const [isActive, setIsActive] = useState(false);
+  const [price, setPrice] = useState();
+  const [tooltipContent, setToolTipContent] = useState();
+  const [Description, setDescription] = useState();
 
   const handleTabChange = key => {
     if (key === activeTab) {
@@ -58,15 +48,42 @@ const LicenseAttributeSet = () => {
     }
   };
 
+  const setIsActiveOrNot = () => {
+    var value = false;
+    if (isActive) {
+      value = false;
+    } else {
+      value = true;
+    }
+    setIsActive(value);
+  };
+
   const addNewSize = () => {
-    var value = items.length + 1;
-    console.log('value:', value.toString());
+    const url =
+      'http://localhost:4321/licenseattribute/upload?title=' +
+      title +
+      '&isActive=' +
+      isActive +
+      '&price=' +
+      price +
+      '&tooltip_content=' +
+      tooltipContent +
+      '&description=' +
+      Description;
+    axios
+      .get(url)
+      .then(res => {
+        console.log(res);
+        setItems(res.data.products);
 
-    var obj = { name: newTitle, key: value.toString() };
-    setItems([...items, obj]);
-    console.log('value:', items);
-
-    setShowToggle(false);
+        setTitle('');
+        setActiveTab(false);
+        setPrice('');
+        setToolTipContent('');
+        setDescription('');
+        setShowToggle(false);
+      })
+      .catch(err => console.log(err));
   };
 
   const ShowToggle = value => {
@@ -88,9 +105,45 @@ const LicenseAttributeSet = () => {
               <Input
                 style={styles.titleInput}
                 placeholder="Title"
-                value={newTitle}
-                onChange={e => setNewTitle(e.target.value)}
+                value={title}
+                onChange={e => setTitle(e.target.value)}
               />
+
+              <div className="form-group-inline">
+                <input
+                  style={{ marginTop: '15px' }}
+                  type="checkbox"
+                  checked={isActive}
+                  aria-label="Global"
+                  onChange={e => setIsActiveOrNot()}
+                />
+
+                <label style={{ marginTop: '15px', marginLeft: '10px' }}>
+                  is Active
+                </label>
+              </div>
+              <Input
+                style={styles.titleInput}
+                value={price}
+                placeholder="Price"
+                onChange={e => setPrice(e.target.value)}
+              />
+
+              <Input
+                style={styles.titleInput}
+                value={tooltipContent}
+                placeholder="Tool Tip Content"
+                onChange={e => setToolTipContent(e.target.value)}
+              />
+
+              <textarea
+                style={styles.descriptionInput}
+                class="form-control"
+                aria-label="With textarea"
+                placeholder="Description"
+                value={Description}
+                onChange={e => setDescription(e.target.value)}
+              ></textarea>
             </ModalBody>
             <ModalFooter>
               <Button color="primary" onClick={() => addNewSize()}>
@@ -108,9 +161,10 @@ const LicenseAttributeSet = () => {
           return (
             <Row>
               <LicenseForm
-                name={attr.name}
-                key={attr.key}
-                myKey={attr.key}
+                name={attr.title}
+                key={attr.id}
+                obj={attr}
+                myKey={attr.id}
                 activeTab={activeTab}
                 handleTabChange={handleTabChange}
               />
@@ -120,6 +174,31 @@ const LicenseAttributeSet = () => {
       </CardBody>
     </Card>
   );
+};
+
+const styles = {
+  container: {
+    padding: '20px',
+  },
+  activeTab: {
+    border: '1px solid #000',
+  },
+  tab: {
+    '&:hover': {
+      cursor: 'pointer',
+    },
+  },
+  titleInput: {
+    marginTop: '10px',
+    marginBottom: '5px',
+  },
+  descriptionInput: {
+    marginTop: '5px',
+    marginBottom: '10px',
+  },
+  addNewBtn: {
+    float: 'right',
+  },
 };
 
 export default LicenseAttributeSet;
